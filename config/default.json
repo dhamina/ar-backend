@@ -1,0 +1,4 @@
+{
+    "mongoURI":"mongodb+srv://dhamina_1410:1410@devconnector.gptee.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "jwtSecret": "arproject"
+}
