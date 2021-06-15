@@ -12,9 +12,8 @@ const  config= require("config");
 router.post('/',[
     check('name','Name is required').not().isEmpty(),
     check('email','email is required').not().isEmpty(),
-    check('password','Password is required').not().isEmpty(),
-    check('password', 'Password length should be at least 8 charaters and maximum length is 15').isLength( {min: 8, max:15})
-,],async(req,res)=>{
+    check('password','Password must be at least 8 characters and maximum length is 15').not().isEmpty().isLength({min: 5, max:15}),
+],async(req,res)=>{
 
     const errors = validationResult(req);
 
