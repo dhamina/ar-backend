@@ -11,7 +11,7 @@ const  config= require("config");
 //@desc Test route
 router.post('/',[
     check('name','Name is required').not().isEmpty(),
-    check('email','email is required').not().isEmpty().isEmail(),
+    check('email','Please enter a valid mail address').not().isEmpty().isEmail(),
     check('password','Password must be at least 8 characters and maximum length is 15').not().isEmpty().isLength({min: 5, max:15}),
 ],async(req,res)=>{
 
