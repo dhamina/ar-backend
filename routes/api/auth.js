@@ -5,6 +5,7 @@ const auth = require("../../middlewarre/auth")
 const User= require("../../models/User")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto-js');
 
 const {check, validationResult} = require('express-validator');
 const  config= require("config");
@@ -25,28 +26,38 @@ router.get('/',auth,async (req,res)=>{
 // GET api/auth
 //public
 //@desc Test route
-router.post('/',[
-    check('email','email is required').not().isEmpty(),
-    check('password','password is required').exists(),
-],async(req,res)=>{
-
-    const errors = validationResult(req);
-
-    if(!errors.isEmpty()){
-     return res.status(400).json({ error:errors.array()})
-    }
+router.post('/', async(req,res)=>{
 
 
    const {email,password} = req.body;
 
      try{
-         let user= await User.findOne({email});
+
+        var emailWords = crypto.enc.Base64.parse(email);
+        const emailDecoded = crypto.enc.Utf8.stringify(emailWords);
+
+        var passwordWords = crypto.enc.Base64.parse(password);
+        const passwordDecoded = crypto.enc.Utf8.stringify(passwordWords);
+        console.log('passwordDecoded', passwordDecoded);
+        console.log('emailDecoded:', emailDecoded);
+
+    
+        const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        if(!emailDecoded.match(emailRegexp))
+        {
+            return res.status(400).json({ error:[{param: "email", msg:"Please enter a valid mail address"}]}); 
+        }
+        
+         let user= await User.findOne({emailDecoded});
+         console.log(user);
         
          if(!user){
           return res.status(400).json({ error:[{msg:"User doesnot Exist"}]})  ; 
          }      
    
-         const isMatch = await bcrypt.compare(password,user.password);
+         console.log('DB password:', user.password);
+         const isMatch = await bcrypt.compare(passwordDecoded,user.password);
          if(!isMatch){
            return res.status(400).json({ error:[{msg:"Invalid credentials"}]})  
          }
