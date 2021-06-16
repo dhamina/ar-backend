@@ -10,17 +10,20 @@ const  config= require("config");
 // GET api/users
 //public
 //@desc Test route
-router.post('/', async(req,res)=>{
+router.post('/', [
+    check('name','Name is required').not().isEmpty(),
+], async(req,res)=>{
+
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+     return res.status(400).json({ error:errors.array()})
+    }
 
    const {name, email, password} = req.body;
 
      try{
   
-            if(name.isEmpty)
-            {
-                return res.status(400).json({ error:[{param: "name", msg:"Name is required"}]}); 
-            }
-
             var emailWords = crypto.enc.Base64.parse(email);
             const emailDecoded = crypto.enc.Utf8.stringify(emailWords);
 
@@ -41,12 +44,8 @@ router.post('/', async(req,res)=>{
                 msg:"Password must be at least 8 characters and maximum length is 15"}]}); 
             }
 
-            console.log(emailDecoded);
-
-         let user= await User.findOne({emailDecoded});
-        
-         console.log(user);
-         
+         let user= await User.findOne({email: emailDecoded});
+             
          if(user){
           return res.status(400).json({ error:[{msg:"User already Exists"}]})   
          }      
@@ -73,7 +72,6 @@ router.post('/', async(req,res)=>{
             })
          }
             catch(e){
-                console.log(e);
            return  res.status(500).send('Server error')
 
      }

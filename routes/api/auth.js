@@ -38,10 +38,7 @@ router.post('/', async(req,res)=>{
 
         var passwordWords = crypto.enc.Base64.parse(password);
         const passwordDecoded = crypto.enc.Utf8.stringify(passwordWords);
-        console.log('passwordDecoded', passwordDecoded);
-        console.log('emailDecoded:', emailDecoded);
-
-    
+        
         const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
         if(!emailDecoded.match(emailRegexp))
@@ -49,14 +46,12 @@ router.post('/', async(req,res)=>{
             return res.status(400).json({ error:[{param: "email", msg:"Please enter a valid mail address"}]}); 
         }
         
-         let user= await User.findOne({emailDecoded});
-         console.log(user);
+         let user= await User.findOne({email: emailDecoded});
         
          if(!user){
           return res.status(400).json({ error:[{msg:"User doesnot Exist"}]})  ; 
          }      
-   
-         console.log('DB password:', user.password);
+
          const isMatch = await bcrypt.compare(passwordDecoded,user.password);
          if(!isMatch){
            return res.status(400).json({ error:[{msg:"Invalid credentials"}]})  
@@ -77,7 +72,6 @@ router.post('/', async(req,res)=>{
             })
          }
             catch(e){
-            console.log(e.message);
             return  res.status(500).send('Server error')
 
      }
