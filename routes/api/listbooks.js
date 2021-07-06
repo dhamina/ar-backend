@@ -3,7 +3,7 @@ const router = express.Router();
 
 const Book = require('../../models/Book');
 
-router.post('/', async(req, res) => {
+router.get('/', async(req, res) => {
 
     try
     {
